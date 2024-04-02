@@ -1,0 +1,21 @@
+name: 'test OIDC Token'
+
+on:
+  workflow_dispatch:
+
+jobs:
+  check_token:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate OIDC Token
+        run: echo "OIDC_TOKEN_VALUE" > oidc_token.txt
+
+      - name: Check OIDC Token Subject
+        run: |
+          token_subject=$(jq -r '.sub' oidc_token.txt)
+          if [[ $token_subject =~ ^repo:.*\/hacktricks-training.*$ ]]; then
+            echo "Token subject matches the pattern."
+          else
+            echo "Token subject does not match the pattern."
+            exit 1
+          fi
